@@ -19,8 +19,10 @@ class ViewController: UIViewController {
     {
         var message = String()
         super.viewDidLoad()
-        let url = URL(string:"http://www.weather-forecast.com/locations/" + searchTextfield.text! + "/forecasts/latest")!
-        let request = NSMutableURLRequest(url: url)
+       
+        if let url = URL(string: "http://www.weather-forecast.com/locations/" + searchTextfield.text!.replacingOccurrences(of: " ", with: "-") + "/forecasts/latest")
+        {
+        let request = NSMutableURLRequest(url: url as URL)
         let task = URLSession.shared.dataTask(with: request as URLRequest)
         {
             data, response, error in
@@ -37,12 +39,12 @@ class ViewController: UIViewController {
                     var stringSeparator = "Weather Forecast Summary:</b><span class=\"read-more-small\"><span class=\"read-more-content\"> <span class=\"phrase\">"
                     if let contentArray = dataString?.components(separatedBy: stringSeparator)
                     {
-                        //print(dataString)
-                        if contentArray.count > 0
+                        
+                        if contentArray.count > 1
                         {
                             stringSeparator = "</span>"
                             let newcontentArray = contentArray[1].components(separatedBy: stringSeparator)
-                            if newcontentArray.count > 0
+                            if newcontentArray.count > 1
                             {
                                 message = newcontentArray[0].replacingOccurrences(of: "&deg;", with: "°")
                                 print(message)
@@ -55,7 +57,7 @@ class ViewController: UIViewController {
                 }
             }
             
-            if message == " "
+            if message == ""
             {
                 message =  "The place couldn't be found . Please try again"
             }
@@ -68,9 +70,11 @@ class ViewController: UIViewController {
         }
         
         task.resume()
-
+        }
+        else
+        {resultLabel.text = "The place couldn't be found . Please try again"
     }
-    
+    }
    
     override func viewDidLoad()
     {
